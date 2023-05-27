@@ -5,18 +5,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   //get emails
   let emails = request.emails;
   //display those emails through list on the popup
-  if (emails === null || emails.length === 0) {
+
+  //distinctivize those emails
+  var outputArray = [];
+  var count = 0;
+  var start = false;
+  for (j = 0; j < emails.length; j++) {
+    for (k = 0; k < outputArray.length; k++) {
+      if (emails[j] == outputArray[k]) {
+        start = true;
+      }
+    }
+    count++;
+    if (count == 1 && start == false) {
+      outputArray.push(emails[j]);
+    }
+    start = false;
+    count = 0;
+  }
+  //distinctivize those emails end
+  if (outputArray === null || outputArray.length === 0) {
     let li = document.createElement("li");
     li.innerText = "No Emails";
     list.appendChild(li);
   } else {
-    emails.forEach((email) => {
-      let li = document.createElement("li");
-      let anchor=document.createElement("a");
-      anchor.href="mailto:"+email;
-      anchor.innerText=email;
-      li.appendChild(anchor);
-      list.appendChild(li);
+    outputArray.forEach((email) => {
+      if (email != "#") {
+        let li = document.createElement("li");
+        let anchor = document.createElement("a");
+        anchor.href = "mailto:" + email;
+        anchor.innerText = email;
+        li.appendChild(anchor);
+        list.appendChild(li);
+      }
     });
   }
 });
